@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    run-as: root
+    commands:
+      - sudo apt-get update -y
+      - sudo add-apt-repository ppa:jonathonf/python-3.6
+      - sudo apt-get install python
+      - sudo curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+      - sudo python get-pip.py
+      - sudo pip install virtualenv 
+      - sudo pip install Flask 
+      
+  pre_build:
+    run-as: root
+    commands:
+      - mkdir /root/api
+      - cd /root/api
+      - curl "https://s3.ap-south-1.amazonaws.com/api123/app.py" > app.py
+            
+  build:
+    run-as: root
+    commands:
+      - echo Build started on `date`
+      - cd /root/api
+      - sudo virtualenv flask
+      - . flask/bin/activate
+      - sudo pip install flask
+      - FLASK_APP=/root/api/app.py
+      - sudo nohup python -m flask run --host=0.0.0.0 --port=5001 &
+
+      
